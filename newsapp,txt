@@ -1,0 +1,115 @@
+package com.example.newsapp;
+
+import android.graphics.Bitmap;
+
+import java.net.URL;
+
+public class News {
+ 
+     private String newstext;
+     private Bitmap imgid;
+     private String newsurl;
+     public News(String newstext,Bitmap imgid,String newsurl)
+     {
+      this.newstext=newstext;
+         this.imgid=imgid;
+         this.newsurl=newsurl;
+     }
+     public String getTitle()
+     {
+         return newstext;
+     }
+public Bitmap getImgId()
+{ 
+  return imgid;
+    }
+    public String getUrl(){
+ return newsurl;
+}
+}
+package com.example.newsapp;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+import java.util.ArrayList;
+
+//class extending from News class using ArrayAdapter
+public class NewsAdapter extends ArrayAdapter<News> {
+
+    public NewsAdapter(Context context, ArrayList<News> news) {
+        super(context, 0,news);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        View listview=convertView;
+        if(listview==null){
+            listview= LayoutInflater.from(getContext()).inflate(R.layout.list_item,parent,false);
+
+            }
+        News getnews=getItem(position);
+        TextView txt1=(TextView) listview.findViewById(R.id.newstext);
+       
+        ImageView bmp1=(ImageView) listview.findViewById(R.id.imgid);
+        txt1.setText(getnews.getnewstext());
+   
+        bmp1.setImageBitmap(getnews.getImgid());
+        return listview;
+    }
+}
+package com.example.newsapp;
+
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
+import androidx.loader.content.AsyncTaskLoader;
+
+import java.util.ArrayList;
+//class extending from News class using ArrayAdapter and AsyncTaskLoader
+public class NewsFetch extends AsyncTaskLoader<ArrayList<News>> {
+    private String murl;
+    public NewsLoader(@NonNull Context context,String url) {
+
+        super(context);
+        murl=url;
+    }
+
+    @Override
+    protected void onStartLoading() {
+        forceLoad();
+    }
+
+    @Nullable
+    @Override
+    public ArrayList<News> loadInBackground() {
+        if(murl==null)
+        {
+        return null;
+    }
+        ArrayList<News> news=QueryUtils.fetchdatafromurl(murl);
+        return news;
+}}
+public class Main
+{
+public static void main(String args[])
+{
+//Association with NewsFetch class
+NewsFetch fetch=new NewsFetch("https://content.guardianapis.com/search?api-key=b622a182-490c-44c1-8104-8b017ce65ef8&show-fields=thumbnail&q=sports");
+}}
